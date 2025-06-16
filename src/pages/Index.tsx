@@ -1,11 +1,15 @@
-
 import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import Dashboard from '@/components/Dashboard';
 import ProductTable from '@/components/ProductTable';
 import ProductForm from '@/components/ProductForm';
+import QuotationTab from '@/components/QuotationTab';
+import StockOutTab from '@/components/StockOutTab';
+import BudgetTab from '@/components/BudgetTab';
+import SalesReceiptTab from '@/components/SalesReceiptTab';
 import { Product } from '@/types/product';
 
 const Index = () => {
@@ -102,33 +106,67 @@ const Index = () => {
             <h1 className="text-3xl font-bold text-gray-900">Sistema de Controle de Estoque</h1>
             <p className="text-gray-600 mt-2">Gerencie seus produtos de forma eficiente</p>
           </div>
-          <Button 
-            onClick={() => setIsFormOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Produto
-          </Button>
         </div>
 
-        {/* Dashboard */}
-        <Dashboard products={products} />
+        {/* Tabs Navigation */}
+        <Tabs defaultValue="estoque" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsTrigger value="estoque">Estoque</TabsTrigger>
+            <TabsTrigger value="cotacao">Cotação de Peças</TabsTrigger>
+            <TabsTrigger value="saida">Saída de Estoque</TabsTrigger>
+            <TabsTrigger value="orcamento">Orçamentos</TabsTrigger>
+            <TabsTrigger value="comprovante">Comprovante de Venda</TabsTrigger>
+          </TabsList>
 
-        {/* Tabela de Produtos */}
-        <ProductTable 
-          products={products}
-          onEdit={openEditForm}
-          onDelete={handleDeleteProduct}
-        />
+          {/* Estoque Tab */}
+          <TabsContent value="estoque">
+            <div className="flex justify-end mb-6">
+              <Button 
+                onClick={() => setIsFormOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Adicionar Produto
+              </Button>
+            </div>
 
-        {/* Formulário de Produto */}
-        {isFormOpen && (
-          <ProductForm
-            product={editingProduct}
-            onSubmit={editingProduct ? handleEditProduct : handleAddProduct}
-            onClose={closeForm}
-          />
-        )}
+            <Dashboard products={products} />
+
+            <ProductTable 
+              products={products}
+              onEdit={openEditForm}
+              onDelete={handleDeleteProduct}
+            />
+
+            {isFormOpen && (
+              <ProductForm
+                product={editingProduct}
+                onSubmit={editingProduct ? handleEditProduct : handleAddProduct}
+                onClose={closeForm}
+              />
+            )}
+          </TabsContent>
+
+          {/* Cotação Tab */}
+          <TabsContent value="cotacao">
+            <QuotationTab products={products} setProducts={setProducts} />
+          </TabsContent>
+
+          {/* Saída Tab */}
+          <TabsContent value="saida">
+            <StockOutTab products={products} setProducts={setProducts} />
+          </TabsContent>
+
+          {/* Orçamento Tab */}
+          <TabsContent value="orcamento">
+            <BudgetTab products={products} />
+          </TabsContent>
+
+          {/* Comprovante Tab */}
+          <TabsContent value="comprovante">
+            <SalesReceiptTab products={products} setProducts={setProducts} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
